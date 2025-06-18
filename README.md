@@ -1,7 +1,7 @@
 # 🔐 VaultLock
 
 **Author:** Muhammad Abid  
-**Year:** 2024  
+**Year:** 2025  
 
 ## Overview
 VaultLock is a next-gen, client-side encrypted document vault that ensures your files stay 100% private—even we can't read them. Built with military-grade encryption, a sleek interface, and a zero-knowledge approach, it's security that just works.
