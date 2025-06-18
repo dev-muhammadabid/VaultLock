@@ -5,6 +5,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import OTPVerificationPage from './pages/OTPVerificationPage';
 import DashboardPage from './pages/DashboardPage';
+import HomePage from './pages/HomePage';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 
@@ -15,6 +16,7 @@ function App() {
       <DocumentProvider>
           <div className="min-h-screen bg-gray-50">
             <Routes>
+               <Route path="/" element={<HomePage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route 
@@ -33,7 +35,7 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-              <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
       </DocumentProvider>

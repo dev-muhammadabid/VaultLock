@@ -16,8 +16,8 @@ const DashboardPage = () => {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0 flex items-center">
-                <FiShield className="h-8 w-8 text-blue-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">SecureVault</span>
+                 <img src="/images/vaultlock-logo.png" alt="VaultLock Logo" className="h-12 w-18" />
+                <span className="ml-2 text-xl font-bold text-gray-900">VaultLock</span>
               </div>
             </div>
             <div className="flex items-center">

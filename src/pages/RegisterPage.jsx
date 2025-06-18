@@ -1,21 +1,22 @@
-// src/pages/LoginPage.js
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiUser, FiLock, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
+import { FiUser, FiLock, FiArrowLeft, FiAlertCircle } from 'react-icons/fi';
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [errors, setErrors] = useState({
     username: '',
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [apiError, setApiError] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { login } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -41,10 +42,21 @@ const LoginPage = () => {
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
       isValid = false;
+    } else if (formData.username.length < 4) {
+      newErrors.username = 'Username must be at least 4 characters';
+      isValid = false;
     }
 
     if (!formData.password) {
       newErrors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      isValid = false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
       isValid = false;
     }
 
@@ -61,10 +73,14 @@ const LoginPage = () => {
     setApiError({ type: '', message: '' });
 
     try {
-      const result = await login(formData.username, formData.password);
+      const result = await register(formData.username, formData.password);
       
       if (result.success) {
-        navigate('/otp-verify');
+        setApiError({ 
+          type: 'success', 
+          message: 'Registration successful! Redirecting to login...' 
+        });
+        setTimeout(() => navigate('/login'), 1500);
       } else {
         setApiError({ type: 'error', message: result.message });
       }
@@ -83,26 +99,32 @@ const LoginPage = () => {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="mx-auto h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-            <FiLock className="h-8 w-8 text-blue-600" />
+             <img src="/images/vaultlock-logo.png" alt="VaultLock Logo" className="h-12 w-18" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
+            Create your account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Don't have an account?{' '}
+            Already have an account?{' '}
             <Link 
-              to="/register" 
+              to="/login" 
               className="font-medium text-blue-600 hover:text-blue-500"
             >
-              Register
+              Sign in
             </Link>
           </p>
         </div>
         
         <div className="bg-white py-8 px-4 shadow rounded-lg sm:px-10">
           {apiError.message && (
-            <div className={`mb-4 p-3 rounded-md flex items-start bg-red-50 text-red-700`}>
-              <FiAlertCircle className="flex-shrink-0 h-5 w-5 mt-0.5 mr-2 text-red-500" />
+            <div className={`mb-4 p-3 rounded-md flex items-start ${
+              apiError.type === 'success' 
+                ? 'bg-green-50 text-green-700' 
+                : 'bg-red-50 text-red-700'
+            }`}>
+              <FiAlertCircle className={`flex-shrink-0 h-5 w-5 mt-0.5 mr-2 ${
+                apiError.type === 'success' ? 'text-green-500' : 'text-red-500'
+              }`} />
               <span>{apiError.message}</span>
             </div>
           )}
@@ -151,7 +173,7 @@ const LoginPage = () => {
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   value={formData.password}
                   onChange={handleChange}
@@ -166,24 +188,47 @@ const LoginPage = () => {
               )}
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="mt-1 relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FiLock className={`h-5 w-5 ${
+                    errors.confirmPassword ? 'text-red-400' : 'text-gray-400'
+                  }`} />
+                </div>
                 <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`block w-full pl-10 pr-3 py-2 border ${
+                    errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                  } rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500`}
+                  placeholder="Confirm your password"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                  Remember me
-                </label>
               </div>
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
+              )}
+            </div>
 
-              <div className="text-sm">
+            <div className="text-sm">
+              <p className="text-gray-500">
+                By registering, you agree to our{' '}
                 <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                  Forgot your password?
+                  Terms of Service
+                </a>{' '}
+                and{' '}
+                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+                  Privacy Policy
                 </a>
-              </div>
+                .
+              </p>
             </div>
 
             <div>
@@ -196,18 +241,18 @@ const LoginPage = () => {
                     : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
                 }`}
               >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
+                {isSubmitting ? 'Creating account...' : 'Create Account'}
               </button>
             </div>
           </form>
           
           <div className="mt-6">
             <Link 
-              to="/register" 
+              to="/login" 
               className="w-full flex justify-center items-center text-sm text-blue-600 hover:text-blue-500"
             >
-              Create new account
-              <FiArrowRight className="ml-1 h-4 w-4" />
+              <FiArrowLeft className="mr-1 h-4 w-4" />
+              Back to login
             </Link>
           </div>
         </div>
@@ -216,4 +261,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
