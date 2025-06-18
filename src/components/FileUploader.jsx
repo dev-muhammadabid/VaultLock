@@ -4,43 +4,60 @@ import { FiUpload } from 'react-icons/fi';
 import { useDocuments } from '../context/DocumentContext';
 
 const FileUploader = () => {
+  // State to manage selected file
   const [file, setFile] = useState(null);
+  
+  // Uploading state and feedback message
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+
+  // Function to upload file from context
   const { uploadDocument } = useDocuments();
 
+  // Triggered when a user selects a file
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
       setFile(e.target.files[0]);
-      setMessage({ type: '', text: '' });
+      setMessage({ type: '', text: '' }); // Clear previous messages
     }
   };
 
+  // Handles file upload when form is submitted
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate file presence
     if (!file) {
       setMessage({ type: 'error', text: 'Please select a file' });
       return;
     }
 
+    // Begin upload
     setIsUploading(true);
+
+    // Attempt to upload and show result message
     const result = await uploadDocument(file);
     setMessage({ type: result.success ? 'success' : 'error', text: result.message });
+
     setIsUploading(false);
-    
+
+    // Reset form on success
     if (result.success) {
       setFile(null);
-      e.target.reset();
+      e.target.reset(); // Clear file input
     }
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
+      {/* Upload Form */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Select a file to upload
           </label>
+
+          {/* Custom file input with drag-and-drop style */}
           <div className="flex items-center">
             <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -52,6 +69,8 @@ const FileUploader = () => {
                   PDF, DOCX, PNG, JPG (MAX. 10MB)
                 </p>
               </div>
+
+              {/* Hidden actual file input */}
               <input 
                 type="file" 
                 className="hidden" 
@@ -61,7 +80,8 @@ const FileUploader = () => {
             </label>
           </div>
         </div>
-        
+
+        {/* Preview selected file */}
         {file && (
           <div className="mb-4 p-3 bg-gray-50 rounded-md">
             <p className="text-sm text-gray-700 truncate">
@@ -72,7 +92,8 @@ const FileUploader = () => {
             </p>
           </div>
         )}
-        
+
+        {/* Feedback message after upload attempt */}
         {message.text && (
           <div className={`mb-4 p-3 rounded-md text-sm ${
             message.type === 'success' 
@@ -82,7 +103,8 @@ const FileUploader = () => {
             {message.text}
           </div>
         )}
-        
+
+        {/* Submit button */}
         <button
           type="submit"
           disabled={!file || isUploading}

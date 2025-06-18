@@ -1,3 +1,4 @@
+// src/context/DocumentContext.jsx
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import CryptoJS from 'crypto-js';
 import { useAuth } from './AuthContext';
@@ -5,12 +6,12 @@ import { useAuth } from './AuthContext';
 const DocumentContext = createContext();
 
 export const DocumentProvider = ({ children }) => {
-  const { currentUser } = useAuth(); // Removed `generatedOTP` from destructuring
+  const { currentUser } = useAuth(); // Currently authenticated user
   const [documents, setDocuments] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [db, setDb] = useState(null);
+  const [db, setDb] = useState(null); // IndexedDB instance
 
-  // Initialize IndexedDB
+  // Initialize the IndexedDB database on component mount
   useEffect(() => {
     const initDB = async () => {
       return new Promise((resolve, reject) => {
@@ -23,6 +24,8 @@ export const DocumentProvider = ({ children }) => {
 
         request.onupgradeneeded = (event) => {
           const db = event.target.result;
+
+          // Create object store with keyPath and user index
           if (!db.objectStoreNames.contains('documents')) {
             const store = db.createObjectStore('documents', { keyPath: 'id' });
             store.createIndex('user', 'user', { unique: false });
@@ -30,7 +33,7 @@ export const DocumentProvider = ({ children }) => {
         };
 
         request.onsuccess = (event) => {
-          setDb(event.target.result);
+          setDb(event.target.result); // Save db instance to state
           resolve(event.target.result);
         };
       });
@@ -39,7 +42,7 @@ export const DocumentProvider = ({ children }) => {
     initDB().catch(console.error);
   }, []);
 
-  // Load documents for current user
+  // Load all documents associated with currentUser
   const loadDocuments = async () => {
     if (!db || !currentUser) return;
 
@@ -65,13 +68,14 @@ export const DocumentProvider = ({ children }) => {
     }
   };
 
-  // Upload and encrypt document
+  // Upload document: read, encrypt, and store it
   const uploadDocument = async (file) => {
     if (!db || !currentUser) {
       return { success: false, message: 'User not authenticated' };
     }
 
     setIsLoading(true);
+
     try {
       const reader = new FileReader();
 
@@ -80,13 +84,12 @@ export const DocumentProvider = ({ children }) => {
           try {
             const fileData = event.target.result;
 
-            // Encrypt file with AES
+            // Encrypt file content using AES with username as key (⚠️ Consider using a better secret key strategy)
             const encryptedData = CryptoJS.AES.encrypt(
               CryptoJS.lib.WordArray.create(fileData),
-              currentUser // Using username as key
+              currentUser
             ).toString();
 
-            // Create document object
             const document = {
               id: Date.now().toString(),
               user: currentUser,
@@ -97,7 +100,6 @@ export const DocumentProvider = ({ children }) => {
               size: file.size
             };
 
-            // Save to IndexedDB
             const transaction = db.transaction('documents', 'readwrite');
             const store = transaction.objectStore('documents');
             store.add(document);
@@ -105,27 +107,18 @@ export const DocumentProvider = ({ children }) => {
             transaction.oncomplete = () => {
               setDocuments(prev => [...prev, document]);
               setIsLoading(false);
-              resolve({
-                success: true,
-                message: 'Document uploaded successfully'
-              });
+              resolve({ success: true, message: 'Document uploaded successfully' });
             };
 
             transaction.onerror = (event) => {
               console.error('Error saving document:', event.target.error);
               setIsLoading(false);
-              resolve({
-                success: false,
-                message: 'Failed to save document'
-              });
+              resolve({ success: false, message: 'Failed to save document' });
             };
           } catch (error) {
             console.error('Encryption failed:', error);
             setIsLoading(false);
-            resolve({
-              success: false,
-              message: 'Encryption failed'
-            });
+            resolve({ success: false, message: 'Encryption failed' });
           }
         };
 
@@ -138,7 +131,7 @@ export const DocumentProvider = ({ children }) => {
     }
   };
 
-  // ✅ Download and decrypt document with hardcoded OTP
+  // Download and decrypt a document by ID (requires OTP)
   const downloadDocument = (documentId, otp) => {
     setIsLoading(true);
     const doc = documents.find(doc => doc.id === documentId);
@@ -148,35 +141,34 @@ export const DocumentProvider = ({ children }) => {
       return { success: false, message: 'Document not found' };
     }
 
-    try {
-      // ✅ Hardcoded OTP validation
-      if (otp !== '123456') {
-        setIsLoading(false);
-        return { success: false, message: 'Invalid OTP' };
-      }
+    // ✅ TEMPORARY OTP: Replace with dynamic OTP in production
+    if (otp !== '123456') {
+      setIsLoading(false);
+      return { success: false, message: 'Invalid OTP' };
+    }
 
-      // Decrypt file
+    try {
       const decryptedData = CryptoJS.AES.decrypt(
         doc.encryptedData,
         currentUser
       );
 
-      // Convert to ArrayBuffer
+      // Convert decrypted data to byte array
       const wordArray = decryptedData;
       const arrayBuffer = new Uint8Array(wordArray.sigBytes);
       for (let i = 0; i < wordArray.sigBytes; i++) {
         arrayBuffer[i] = wordArray.words[Math.floor(i / 4)] >>> (24 - (i % 4) * 8) & 0xff;
       }
 
-      // Create blob and trigger download
+      // Create and download file
       const blob = new Blob([arrayBuffer], { type: doc.fileType });
       const url = URL.createObjectURL(blob);
-      const a = window.document.createElement('a'); // ✅ fixed usage
+      const a = document.createElement('a');
       a.href = url;
       a.download = doc.fileName;
-      window.document.body.appendChild(a);
+      document.body.appendChild(a);
       a.click();
-      window.document.body.removeChild(a);
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
       setIsLoading(false);
@@ -188,7 +180,7 @@ export const DocumentProvider = ({ children }) => {
     }
   };
 
-  // Delete document
+  // Delete a document from DB and state
   const deleteDocument = async (documentId) => {
     if (!db) return;
 
@@ -213,7 +205,7 @@ export const DocumentProvider = ({ children }) => {
     }
   };
 
-  // Load documents when user changes
+  // Load documents when db or currentUser changes
   useEffect(() => {
     if (currentUser && db) {
       loadDocuments();
@@ -235,4 +227,5 @@ export const DocumentProvider = ({ children }) => {
   );
 };
 
+// Custom hook to use document functions
 export const useDocuments = () => useContext(DocumentContext);

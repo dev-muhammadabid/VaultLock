@@ -1,70 +1,70 @@
-# Getting Started with Create React App
+# 🔐 VaultLock
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Author:** Muhammad Abid  
+**Year:** 2024  
 
-## Available Scripts
+## Overview
+VaultLock is a next-gen, client-side encrypted document vault that ensures your files stay 100% private—even we can't read them. Built with military-grade encryption, a sleek interface, and a zero-knowledge approach, it's security that just works.
 
-In the project directory, you can run:
+## 🚀 Key Features
+- 🔐 End-to-End Encryption (AES-256)
+- 🔑 Zero-Knowledge Architecture – We never see your files
+- 🧂 PBKDF2 Password Hashing with 128-bit salt
+- ✅ Two-Factor Authentication with OTP
+- 📁 Encrypted Upload, Storage & Download
+- 🗑️ Crypto-Shredding for permanent deletion
+- 🌐 Offline-Ready – Uses browser's IndexedDB
+- 🧭 Mobile-First, Responsive UI
+- 👁️‍🗨️ Real-Time Feedback + Animation
 
-### `npm start`
+## 🛡️ How It Works
+Step	Action
+- 🔑	Login with password (PBKDF2-secured)
+- 🗂️	Upload files (AES-256 encrypted on client)
+- 💾	Files stored securely in IndexedDB
+- 📥	Download by entering OTP (default: 123456)
+- 🧨	Delete securely with crypto-shredding
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🧰 Tech Stack
+- Component	Tech
+- Frontend	React 18
+- Encryption	CryptoJS (AES, PBKDF2)
+- Storage	IndexedDB + localStorage
+- Styling	Tailwind CSS
+- Icons	Feather Icons via React Icons
+- Build Tool	Create React App (CRA)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🔐 Security At a Glance
+- AES-256 Encryption + Unique IV per File
+- PBKDF2 Key Derivation (1000 iterations)
+- OTP Verification for File Access
+- Session Expiry, Device Binding
+- Document Audit Logs
 
-### `npm test`
+## 📦 Default Settings (For Demo/Test)
+## 🔢 OTP for Decryption/Download: 123456
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 📸 Screenshots
+![HomePage](assets/homepage.png)
+![Dashboard](assets/dashboard.png)
+![Features File](assets/features.png)
+![Upload Document](assets/upload.png)
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🛣️ Roadmap Highlights
+- 🔐 Biometric Login via WebAuthn
+- 🔗 Encrypted File Sharing with Expiry
+- 🧠 AI-based Access Anomaly Detection
+- 🌍 Cross-Device Sync & Blockchain Auditing
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🧪 Ideal For
+- 🧾 Legal Firms – Case file protection
+- 🏥 Healthcare – HIPAA-compliant storage
+- 🏛️ Government – Secure classified docs
+- 💰 Finance – Encrypted audit logs
 
-### `npm run eject`
+## 📣 Final Word
+VaultLock isn't just secure. It's future-ready. From quantum-resistant cryptography to AI-powered document scanning—VaultLock is your fortress for digital documents.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 🔏 Your files. Your rules. Our vault.
